@@ -1,7 +1,7 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environment/environment';
-import {catchError, of} from 'rxjs';
+import {catchError, map, Observable, of} from 'rxjs';
 import {IAuthResponse} from '../interface/auth/authorization.interface';
 
 @Injectable({
@@ -13,15 +13,24 @@ export class AuthService {
 
   private _isAuthenticated = signal<boolean>(false);
 
-  isAuthenticated = computed(() => this._isAuthenticated());
+  get isAuthenticated(): boolean {
+    return this._isAuthenticated();
+  }
 
-  login() {
-    this.http
-      .get<IAuthResponse>(`${environment.apiUrl}/authentication`)
-      .pipe(catchError(() => of({ success: false })))
-      .subscribe((response) => {
-        this._isAuthenticated.set(response.success);
-      });
+  constructor() {
+    this.login();
+  }
+
+  login(): Observable<boolean> {
+    return this.http
+        .get<{ success: boolean }>(`${environment.apiUrl}/authentication`)
+        .pipe(
+            catchError(() => of({ success: false })),
+            map(response => {
+              this._isAuthenticated.set(response.success);
+              return response.success;
+            })
+        );
   }
 
 }

@@ -17,7 +17,7 @@ export class MovieService {
     this.http.get<{ results: IMovie[] }>(this.API_URL)
       .pipe(
         switchMap(response => of(response.results)),
-        catchError(() => of([])) // В случае ошибки пустой массив
+        catchError(() => of([]))
       )
       .subscribe(movies => this.movies.set(movies));
   }
