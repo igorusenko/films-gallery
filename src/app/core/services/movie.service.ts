@@ -1,25 +1,41 @@
 import {inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environment/environment';
-import {IMovie} from '../interface/movie/movie.interface';
-import {catchError, of, switchMap} from 'rxjs';
+import {IMovie, IMoviesResponse, IMoviesSearchFilter} from '../interface/movie/movie.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
   private http = inject(HttpClient);
-  movies = signal<IMovie[]>([]);
+  popularMovies = signal<IMoviesResponse | null>(null);
+  filteredMovies = signal<IMoviesResponse | null>(null);
+  movieById = signal<IMovie | null>(null);
 
-  private readonly API_URL = `${environment.apiUrl}/movie/popular?language=en-US&page=1`;
+  public getPopularMovies() {
+    this.http.get<IMoviesResponse>(`${environment.apiUrl}/movie/popular?language=en-US&page=1`)
+      .subscribe(response => this.popularMovies.set(response));
+  }
 
-  fetchMovies() {
-    this.http.get<{ results: IMovie[] }>(this.API_URL)
-      .pipe(
-        switchMap(response => of(response.results)),
-        catchError(() => of([]))
-      )
-      .subscribe(movies => this.movies.set(movies));
+  public getMoviesByFilter(filter: IMoviesSearchFilter) {
+    let params = new HttpParams();
+
+    for (const key in filter) {
+      if (filter.hasOwnProperty(key)) {
+        const value = filter[key as keyof IMoviesSearchFilter];
+        if (value !== undefined && value !== null) {
+          params = params.set(key, value.toString());
+        }
+      }
+    }
+
+    this.http.get<IMoviesResponse>(`${environment.apiUrl}/search/movie`, {params})
+      .subscribe(response => this.filteredMovies.set(response));
+  }
+
+  public getMovieById(id: number) {
+    this.http.get<IMovie>(`${environment.apiUrl}/movie/${id}`)
+      .subscribe(movie => this.movieById.set(movie));
   }
 
 }
