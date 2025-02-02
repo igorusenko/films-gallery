@@ -13,6 +13,6 @@ export class MovieComponent {
   @Input() mainBanner: boolean;
 
   get getImageUrl(): string {
-    return this.movie?.poster_path ? this.imageUrl + this.movie?.poster_path : './assets/images/no-image.png';
+    return this.movie?.poster_path ? this.imageUrl + this.movie?.poster_path : '/no-image.jpg';
   }
 }

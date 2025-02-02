@@ -1,8 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 
+.hero-container, .poster-container, .poster {
+  height: 100%;
+}
+
 .hero-container {
   display: flex;
   justify-content: center;
+
+  .poster {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 @keyframes bounceIn {

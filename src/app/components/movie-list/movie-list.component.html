@@ -3,7 +3,7 @@
     <ng-template let-product #item>
       <app-movie *ngIf="!product?.showElse" [movie]="product" [imageUrl]="environment.imageUrl"></app-movie>
       <div *ngIf="product?.showElse" class="show-else-block flex justify-center">
-        <p-button (click)="loadMorePopularMovies()" class="flex items-center" label="Show Else" icon="pi pi-check" size="large" />
+        <p-button *ngIf="popularMoviesPage < popularMovies?.total_pages!" (click)="loadMorePopularMovies()" class="flex items-center" label="Show Else" icon="pi pi-check" size="large" />
       </div>
     </ng-template>
   </p-carousel>
@@ -16,9 +16,12 @@
   </div>
 
   <div *ngIf="getFilteredMovies" class="flex justify-center">
-    <p-carousel [value]="getFilteredMovies" [numVisible]="8" [numScroll]="4">
+    <p-carousel [value]="filterMovies?.results!" [numVisible]="8" [numScroll]="4">
       <ng-template let-product #item>
-        <app-movie [movie]="product" [imageUrl]="environment.imageUrl"></app-movie>
+        <app-movie *ngIf="!product?.showElse" [movie]="product" [imageUrl]="environment.imageUrl"></app-movie>
+        <div *ngIf="product?.showElse" class="show-else-block flex justify-center">
+          <p-button *ngIf="filterMoviesPage < filterMovies?.total_pages!" (click)="loadMoreFilterMovies()" class="flex items-center" label="Show Else" icon="pi pi-check" size="large" />
+        </div>
       </ng-template>
     </p-carousel>
   </div>

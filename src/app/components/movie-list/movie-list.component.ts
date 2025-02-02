@@ -1,9 +1,8 @@
 import {Component, computed, effect, inject} from '@angular/core';
 import {MovieService} from '../../core/services/movie.service';
 import {MovieComponent} from '../movie/movie.component';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
-import {CarouselModule, CarouselResponsiveOptions} from 'primeng/carousel';
-import {Tag} from 'primeng/tag';
+import {NgIf} from '@angular/common';
+import {CarouselModule} from 'primeng/carousel';
 import {Button} from 'primeng/button';
 import {IMovie, IMoviesResponse, IMoviesSearchFilter} from '../../core/interface/movie/movie.interface';
 import {FloatLabel} from 'primeng/floatlabel';
@@ -27,10 +26,13 @@ import {environment} from '../../environment/environment';
   styleUrl: './movie-list.component.scss'
 })
 export class MovieListComponent {
-  public  popularPage: number = 1;
+  public popularMoviesPage: number = 1;
+  public filterMoviesPage: number = 1;
   public searchTextControl = new FormControl();
-  private movieService = inject(MovieService);
   public popularMovies: IMoviesResponse | null;
+  public filterMovies: IMoviesResponse | null;
+  private isSearchTextChanged: boolean = false;
+  private movieService = inject(MovieService);
   popularMoviesSignal = computed(() => this.movieService.popularMovies());
   filterMoviesSignal = computed(() => this.movieService.filteredMovies());
 
@@ -39,12 +41,18 @@ export class MovieListComponent {
   }
 
   constructor() {
-    this.fetchPopularMovies(this.popularPage)
+    this.fetchPopularMovies(this.popularMoviesPage)
     this.onSearchTextChanged();
 
     effect(() => {
       if(this.popularMoviesSignal()) {
         this.popularMoviesEffect();
+      }
+    });
+
+    effect(() => {
+      if (this.filterMoviesSignal()) {
+        this.filterMoviesEffect();
       }
     });
   }
@@ -53,11 +61,17 @@ export class MovieListComponent {
     this.movieService.getPopularMovies(page);
   }
 
+  fetchFilterMovies(filter : IMoviesSearchFilter) {
+    this.movieService.getMoviesByFilter(filter)
+  }
+
   private onSearchTextChanged(): void {
     this.searchTextControl.valueChanges
       .pipe(debounceTime(500))
       .subscribe((value: string) => {
-        this.movieService.getMoviesByFilter(this.createFilterModel(value))
+        this.isSearchTextChanged = true;
+        this.filterMoviesPage = 1;
+        this.fetchFilterMovies(this.createFilterModel(value, this.filterMoviesPage));
       });
   }
 
@@ -69,26 +83,47 @@ export class MovieListComponent {
         results: this.popularMovies ? [...this.popularMovies?.results!, ...this.popularMoviesSignal()?.results!] : this.popularMoviesSignal()?.results,
         total_results: this.popularMoviesSignal()?.total_results,
       }
-    if (this.popularMovies.page! > 1) {
-      const firstShowElseIndex = this.popularMovies.results!.findIndex(movie => movie.showElse);
-      if (firstShowElseIndex !== -1) {
-        this.popularMovies.results!.splice(firstShowElseIndex, 1);
-      }
+    if (this.popularMovies.page! > 1 || this.popularMoviesPage === this.popularMovies.total_pages) {
+      this.deleteShowElseCard(this.popularMovies);
     }
   }
 
-  private createFilterModel(query: string): IMoviesSearchFilter {
+  private filterMoviesEffect(): void {
+      this.filterMovies = {
+        page: this.filterMoviesSignal()?.page,
+        total_pages: this.filterMoviesSignal()?.total_pages,
+        results: this.isSearchTextChanged ? this.filterMoviesSignal()?.results : this.filterMovies ? [...this.filterMovies.results!, ...this.filterMoviesSignal()?.results!] : this.filterMoviesSignal()?.results,
+        total_results: this.filterMoviesSignal()?.total_results,
+      }
+      if (this.filterMovies.page! > 1 && !this.isSearchTextChanged) {
+        this.deleteShowElseCard(this.filterMovies);
+      }
+      if (this.filterMoviesPage === this.filterMovies.total_pages)
+        this.deleteShowElseCard(this.filterMovies);
+
+      this.isSearchTextChanged = false;
+  }
+
+  private deleteShowElseCard(response: IMoviesResponse): void {
+    const firstShowElseIndex = response.results!.findIndex(movie => movie.showElse);
+    if (firstShowElseIndex !== -1) {
+      response.results!.splice(firstShowElseIndex, 1);
+    }
+  }
+
+  private createFilterModel(query: string, page: number): IMoviesSearchFilter {
     return {
-      query
+      query,
+      page
     }
   }
 
   public loadMorePopularMovies(): void {
-    this.fetchPopularMovies(this.popularPage += 1)
+    this.fetchPopularMovies(this.popularMoviesPage += 1)
   }
 
-  public loadMoreSearchMovies(): void {
-
+  public loadMoreFilterMovies(): void {
+    this.fetchFilterMovies(this.createFilterModel(this.searchTextControl.value, this.filterMoviesPage += 1));
   }
 
   protected readonly environment = environment;

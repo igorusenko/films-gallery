@@ -35,6 +35,10 @@ export class MovieService {
     }
 
     this.http.get<IMoviesResponse>(`${environment.apiUrl}/search/movie`, {params})
+      .pipe(map(response => {
+        response.results!.push({showElse: true})
+        return response;
+      }))
       .subscribe(response => this.filteredMovies.set(response));
   }
 
