@@ -2,6 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environment/environment';
 import {IMovie, IMoviesResponse, IMoviesSearchFilter} from '../interface/movie/movie.interface';
+import {map} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,12 @@ export class MovieService {
   filteredMovies = signal<IMoviesResponse | null>(null);
   movieById = signal<IMovie | null>(null);
 
-  public getPopularMovies() {
-    this.http.get<IMoviesResponse>(`${environment.apiUrl}/movie/popular?language=en-US&page=1`)
+  public getPopularMovies(page: number) {
+    this.http.get<IMoviesResponse>(`${environment.apiUrl}/movie/popular?language=en-US&page=${page}`)
+      .pipe(map(response => {
+        response.results!.push({showElse: true})
+        return response;
+      }))
       .subscribe(response => this.popularMovies.set(response));
   }
 
