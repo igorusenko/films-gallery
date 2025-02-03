@@ -1,6 +1,6 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../environment/environment';
+import {environment} from '../../../environment/environment';
 import {IMovie, IMoviesResponse, IMoviesSearchFilter} from '../interface/movie/movie.interface';
 import {map} from 'rxjs';
 

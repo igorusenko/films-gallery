@@ -1,6 +1,6 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environment/environment';
+import {environment} from '../../../environment/environment';
 import {catchError, map, Observable, of} from 'rxjs';
 import {IAuthResponse} from '../interface/auth/authorization.interface';
 
