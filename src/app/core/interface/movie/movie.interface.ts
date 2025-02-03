@@ -21,6 +21,9 @@ export interface IMovie {
   vote_average?: number;
   vote_count?: number;
   showElse?: boolean;
+  homepage?: string;
+  production_companies?: Array<ICompany>;
+  genres?: Array<IGen>
 }
 
 export interface IMoviesSearchFilter {
@@ -31,4 +34,16 @@ export interface IMoviesSearchFilter {
   page?: number;
   region?: string;
   year?: string;
+}
+
+export interface ICompany {
+  id: number;
+  logo_path: string;
+  name: string;
+  origin_country: string;
+}
+
+export interface IGen {
+  id: number;
+  name: string;
 }

@@ -10,6 +10,8 @@ import {InputText} from 'primeng/inputtext';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime} from 'rxjs';
 import {environment} from '../../environment/environment';
+import {animate, style, transition, trigger} from '@angular/animations';
+import {fadeInAnimation} from '../../core/animations/fadeIn';
 @Component({
   selector: 'app-movie-list',
   imports: [
@@ -23,7 +25,8 @@ import {environment} from '../../environment/environment';
     NgIf
   ],
   templateUrl: './movie-list.component.html',
-  styleUrl: './movie-list.component.scss'
+  styleUrl: './movie-list.component.scss',
+  animations: [fadeInAnimation]
 })
 export class MovieListComponent {
   public popularMoviesPage: number = 1;
@@ -45,11 +48,11 @@ export class MovieListComponent {
     this.onSearchTextChanged();
 
     effect(() => {
-      if(this.popularMoviesSignal()) {
+      if(this.popularMoviesSignal() && !this.popularMovies?.results) {
         this.popularMoviesEffect();
       }
     });
-
+    this.movieService.filteredMovies.set(null);
     effect(() => {
       if (this.filterMoviesSignal()) {
         this.filterMoviesEffect();
@@ -57,11 +60,19 @@ export class MovieListComponent {
     });
   }
 
-  fetchPopularMovies(page: number) {
+  public loadMorePopularMovies(): void {
+    this.fetchPopularMovies(this.popularMoviesPage += 1)
+  }
+
+  public loadMoreFilterMovies(): void {
+    this.fetchFilterMovies(this.createFilterModel(this.searchTextControl.value, this.filterMoviesPage += 1));
+  }
+
+  private fetchPopularMovies(page: number) {
     this.movieService.getPopularMovies(page);
   }
 
-  fetchFilterMovies(filter : IMoviesSearchFilter) {
+  private fetchFilterMovies(filter : IMoviesSearchFilter) {
     this.movieService.getMoviesByFilter(filter)
   }
 
@@ -92,7 +103,7 @@ export class MovieListComponent {
       this.filterMovies = {
         page: this.filterMoviesSignal()?.page,
         total_pages: this.filterMoviesSignal()?.total_pages,
-        results: this.isSearchTextChanged ? this.filterMoviesSignal()?.results : this.filterMovies ? [...this.filterMovies.results!, ...this.filterMoviesSignal()?.results!] : this.filterMoviesSignal()?.results,
+        results: this.isSearchTextChanged || this.filterMovies?.results ? this.filterMoviesSignal()?.results : this.filterMovies ? [...this.filterMovies.results!, ...this.filterMoviesSignal()?.results!] : this.filterMoviesSignal()?.results,
         total_results: this.filterMoviesSignal()?.total_results,
       }
       if (this.filterMovies.page! > 1 && !this.isSearchTextChanged) {
@@ -116,14 +127,6 @@ export class MovieListComponent {
       query,
       page
     }
-  }
-
-  public loadMorePopularMovies(): void {
-    this.fetchPopularMovies(this.popularMoviesPage += 1)
-  }
-
-  public loadMoreFilterMovies(): void {
-    this.fetchFilterMovies(this.createFilterModel(this.searchTextControl.value, this.filterMoviesPage += 1));
   }
 
   protected readonly environment = environment;

@@ -1,9 +1,12 @@
 import {Component, Input} from '@angular/core';
 import {IMovie} from '../../core/interface/movie/movie.interface';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-movie',
-  imports: [],
+  imports: [
+    RouterLink
+  ],
   templateUrl: './movie.component.html',
   styleUrl: './movie.component.scss'
 })
