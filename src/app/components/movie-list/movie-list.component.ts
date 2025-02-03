@@ -68,7 +68,7 @@ get getFilteredMovies(): Array<IMovie> {
     this.onSearchTextChanged();
 
     effect(() => {
-      if(this.popularMoviesSignal() && !this.popularMovies?.results) {
+      if(this.popularMoviesSignal()) {
         this.popularMoviesEffect();
       }
     });
@@ -120,10 +120,12 @@ get getFilteredMovies(): Array<IMovie> {
   }
 
   private filterMoviesEffect(): void {
+    console.log(this.isSearchTextChanged)
+    console.log(this.filterMovies?.results)
       this.filterMovies = {
         page: this.filterMoviesSignal()?.page,
         total_pages: this.filterMoviesSignal()?.total_pages,
-        results: this.isSearchTextChanged || this.filterMovies?.results ? this.filterMoviesSignal()?.results : this.filterMovies ? [...this.filterMovies.results!, ...this.filterMoviesSignal()?.results!] : this.filterMoviesSignal()?.results,
+        results: this.isSearchTextChanged ? this.filterMoviesSignal()?.results : this.filterMovies ? [...this.filterMovies.results!, ...this.filterMoviesSignal()?.results!] : this.filterMoviesSignal()?.results,
         total_results: this.filterMoviesSignal()?.total_results,
       }
       if (this.filterMovies.page! > 1 && !this.isSearchTextChanged) {
