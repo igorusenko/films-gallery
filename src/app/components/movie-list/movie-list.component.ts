@@ -9,7 +9,7 @@ import {FloatLabel} from 'primeng/floatlabel';
 import {InputText} from 'primeng/inputtext';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime} from 'rxjs';
-import {environment} from '../../../environment/environment';
+import {environment} from '../../../environments/environment';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {fadeInAnimation} from '../../core/animations/fadeIn';
 @Component({

@@ -2,7 +2,7 @@ import {Component, computed, effect, inject} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {MovieService} from '../../core/services/movie.service';
-import {environment} from '../../../environment/environment';
+import {environment} from '../../../environments/environment';
 import {IGen, IMovie} from '../../core/interface/movie/movie.interface';
 import {Rating} from 'primeng/rating';
 import {FormsModule} from '@angular/forms';
