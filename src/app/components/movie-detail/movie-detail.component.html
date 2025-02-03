@@ -1,1 +1,32 @@
-<p>movie-detail works!</p>
+<div *ngIf="movie" @fadeIn>
+  <p-button [routerLink]="['/']" class="flex items-center pl-4 pt-4" label="Back" size="small" />
+  <div class="flex justify-center items-center flex-col">
+    <img class="w-80" [src]="environment.backdropImageUrl + movie?.poster_path" alt="">
+    <div class="title">
+      {{movie?.title}}
+    </div>
+  </div>
+  <div class="info-block">
+    <p>{{movie?.overview}}</p>
+    <div class="flex justify-between">
+      <p-rating [(ngModel)]="voteAverage" stars="10" [disabled]="true" />
+      <div class="flex">
+        <p class="font-mono">
+          Genres: {{genres}}
+        </p>
+      </div>
+      <a [href]="homePage">Home page</a>
+    </div>
+    <div class="flex justify-between">
+      <div class="flex items-end gap-5">
+        <div *ngFor="let company of movie?.production_companies; index as i" class="flex flex-col items-center">
+          <img class="w-20" [src]="environment.logoImageUrl + company.logo_path" alt="">
+          <p class="text-center font-mono"><span *ngIf="i === 0">Companies: </span>{{company.name}}, </p>
+        </div>
+      </div>
+      <div>
+        <!--      {{movie.or}}-->
+      </div>
+    </div>
+  </div>
+</div>

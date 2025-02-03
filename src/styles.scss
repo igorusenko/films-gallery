@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+html, body {
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background-image: url('./assets/img/background-blured.jpg');
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
