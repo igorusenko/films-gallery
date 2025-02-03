@@ -39,7 +39,27 @@ export class MovieListComponent {
   popularMoviesSignal = computed(() => this.movieService.popularMovies());
   filterMoviesSignal = computed(() => this.movieService.filteredMovies());
 
-  get getFilteredMovies(): Array<IMovie> {
+  responsiveOptions = [
+    {
+      breakpoint: '1024px',
+      numVisible: 6,
+      numScroll: 3
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 4,
+      numScroll: 2
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1,
+      numScroll: 1
+    }
+  ];
+
+
+
+get getFilteredMovies(): Array<IMovie> {
     return this.filterMoviesSignal()?.results as Array<IMovie>;
   }
 

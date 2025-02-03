@@ -7,3 +7,8 @@ p-carousel {
   background-color: gray;
   opacity: 0.8;
 }
+@media screen and (max-width: 450px){
+  p-carousel {
+    --p-carousel-indicator-list-padding: 0.5rem;
+  }
+}
